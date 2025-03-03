@@ -26,21 +26,32 @@ public class SpringTestApplication {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void test() {
-		groceryService.addGrocery();
+		groceryService.addTestGrocery();
 		Scanner sc = new Scanner(System.in);
 		boolean isActive = true;
 		int pageNumber = 0;
+		int pageSize = 5;
+		int totalPages = groceryService.returnRepSize()/pageSize;
 
 		while (isActive) {
-			Pageable pageable =  PageRequest.of(pageNumber, 5);
-			groceryService.findAll(pageable).forEach(System.out::println);
+			Pageable pageable =  PageRequest.of(pageNumber, pageSize);
+			groceryService.findAllPageable(pageable).forEach(System.out::println);
 			System.out.println("-".repeat(43));
 			Command.printCommands();
 			System.out.println("-".repeat(43));
 			System.out.println("input command:");
 			switch (Command.ofKey(Integer.parseInt(sc.nextLine()))) {
-				case NEXT_PAGE -> pageNumber++;
-				case PREVIOUS_PAGE -> pageNumber--;
+				case NEXT_PAGE -> {
+					if (pageNumber < totalPages--){
+						pageNumber++;
+					}
+					else System.out.println("can't get higher page");
+				}
+				case PREVIOUS_PAGE -> {
+					if (pageNumber >= 1) {
+						pageNumber--;
+					} else System.out.println("can't get lower page");
+				}
 				case EXIT -> {
 					isActive = false;
                     System.out.println("Application started. Exiting...");
