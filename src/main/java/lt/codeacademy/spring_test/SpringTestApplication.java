@@ -42,7 +42,9 @@ public class SpringTestApplication {
                 case DEL_BOOK -> bookService.deleteBook(bookService.findBookByName(scanner));
                 case CHANGE_LOC -> bookService.changeBookLocation(bookService.findBookByName(scanner), scanner);
                 case PRINT_BOOKS_BY_GENRE -> bookService.printAllByGenre(scanner);
-                case PRINT_BOOKS_BY_GENRE_YEAR -> bookService.printAllByGenreYearAndYear(scanner);
+                case PRINT_BOOKS_BY_GENRE_YEAR -> {
+					System.out.println(bookService.getCountByGenreYearAndYear(scanner));
+				}
                 case EXIT -> {
 					System.out.println("Application exiting...");
 					isActive = false;

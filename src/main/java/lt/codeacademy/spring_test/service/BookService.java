@@ -19,26 +19,28 @@ public class BookService {
     private final BookRepository bookRepository;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public List<Book> getAllByGenre(Scanner scanner) {
-        System.out.println("Enter genre:");
-        String genre = scanner.nextLine();
+    public List<Book> getAllByGenre(String genre) {
         return bookRepository.findAllByGenre(genre);
     }
     public void printAllByGenre(Scanner scanner) {
-        getAllByGenre(scanner).forEach(System.out::println);
+        System.out.println("Enter genre:");
+        String genre = scanner.nextLine();
+        getAllByGenre(genre).forEach(System.out::println);
     }
 
-    public void printAllByGenreYearAndYear(Scanner scanner) throws ParseException {
+    public int getCountByGenreYearAndYear(Scanner scanner)throws ParseException {
+        System.out.println("Enter genre you're looking for:");
+        String genre = scanner.nextLine();
         System.out.println("Enter year you're looking for:");
         int year = Integer.parseInt(scanner.nextLine());
 
-        List<Book> filteredBooks = getAllByGenre(scanner).stream()
+        List<Book> filteredBooks = getAllByGenre(genre).stream()
                 .filter(book -> book.getPublishDate().toInstant()
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDate()
                                 .getYear() == year)
                 .toList();
-        filteredBooks.forEach(System.out::println);
+        return filteredBooks.size();
     }
 
     public void addBook(Book book){
@@ -46,6 +48,10 @@ public class BookService {
     }
     public void deleteBook(Book book){
         bookRepository.delete(book);
+    }
+
+    public Book getBookByTitle(String title){
+        return bookRepository.getBookByTitle(title);
     }
 
     public Book findBookByName(Scanner scanner){
@@ -56,7 +62,7 @@ public class BookService {
             System.out.println("Book not found");
             continue;
         }
-        Book book = bookRepository.findBookByTitle(bookName);
+        Book book = getBookByTitle(bookName);
         if (book == null){
             System.out.println("null: Book not found");
             continue;

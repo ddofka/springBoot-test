@@ -11,8 +11,7 @@ import java.util.List;
 public interface BookRepository extends JpaRepository<Book,Long> {
 
     List<Book> findAllByGenre(String genre);
-
-    Book findBookByTitle(String title);
+    Book getBookByTitle(String title);
     boolean existsBookByTitle(String title);
 
 }
