@@ -3,6 +3,7 @@ package lt.codeacademy.spring_test;
 import lombok.RequiredArgsConstructor;
 import lt.codeacademy.spring_test.Enums.Command;
 import lt.codeacademy.spring_test.Enums.LibCommand;
+import lt.codeacademy.spring_test.entity.Book;
 import lt.codeacademy.spring_test.service.BookService;
 import lt.codeacademy.spring_test.service.GroceryService;
 import org.springframework.boot.SpringApplication;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 @RequiredArgsConstructor
@@ -38,12 +41,31 @@ public class SpringTestApplication {
 			System.out.println("Input command:");
 			switch (LibCommand.ofKey(Integer.parseInt(scanner.nextLine()))) {
 				case null -> System.out.println("ERROR: uknown command");
-                case ADD_BOOK -> bookService.addBook(bookService.createBook(scanner));
-                case DEL_BOOK -> bookService.deleteBook(bookService.findBookByName(scanner));
-                case CHANGE_LOC -> bookService.changeBookLocation(bookService.findBookByName(scanner), scanner);
-                case PRINT_BOOKS_BY_GENRE -> bookService.printAllByGenre(scanner);
+                case ADD_BOOK -> bookService.addBook(new Book(scanner));
+                case DEL_BOOK -> {
+					System.out.println("Enter book title to delete:");
+					String title = scanner.nextLine();
+					bookService.deleteBook(bookService.findBookByTitle(title));
+				}
+                case CHANGE_LOC -> {
+					System.out.println("Enter book title:");
+					String title = scanner.nextLine();
+					System.out.println("Enter Book's new location: ");
+					String bookLocation = scanner.nextLine();
+					bookService.changeBookLocation(bookService.findBookByTitle(title), bookLocation);
+				}
+                case PRINT_BOOKS_BY_GENRE -> {
+					System.out.println("Enter genre:");
+					String genre = scanner.nextLine();
+					bookService.printAllByGenre(genre);
+				}
                 case PRINT_BOOKS_BY_GENRE_YEAR -> {
-					System.out.println(bookService.getCountByGenreYearAndYear(scanner));
+					System.out.println("Enter genre you're looking for:");
+					String genre = scanner.nextLine();
+					System.out.println("Enter year you're looking for:");
+					String year = scanner.nextLine();
+					long count = bookService.getCountByGenreAndYear(genre,year);
+					System.out.println(count);
 				}
                 case EXIT -> {
 					System.out.println("Application exiting...");

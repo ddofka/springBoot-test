@@ -7,7 +7,7 @@ public enum LibCommand {
     DEL_BOOK(2,"2 - delete book"),
     CHANGE_LOC(3,"3 - change book's location"),
     PRINT_BOOKS_BY_GENRE(4,"4 - print books by genre"),
-    PRINT_BOOKS_BY_GENRE_YEAR(5,"5 - print books by genre and year"),
+    PRINT_BOOKS_BY_GENRE_YEAR(5,"5 - print book count by genre and year"),
     EXIT(6,"6 - exit");
 
 

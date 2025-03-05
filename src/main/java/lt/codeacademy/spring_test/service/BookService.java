@@ -5,11 +5,11 @@ import lt.codeacademy.spring_test.entity.Book;
 import lt.codeacademy.spring_test.repository.BookRepository;
 import org.springframework.stereotype.Service;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -17,30 +17,22 @@ import java.util.Scanner;
 public class BookService {
 
     private final BookRepository bookRepository;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_FORMATTER2 = DateTimeFormatter.ofPattern("yyyy");
+
+    public long getCountByGenreAndYear(String genre, String year){
+        int yearValue = Integer.parseInt(year);
+        List<Book> filteredByGenre = bookRepository.findAllByGenre(genre);
+        return bookRepository.findAllByGenre(genre).stream()
+                .filter(book -> book.getPublishDate().getYear() == yearValue)
+                .count();
+    }
 
     public List<Book> getAllByGenre(String genre) {
         return bookRepository.findAllByGenre(genre);
     }
-    public void printAllByGenre(Scanner scanner) {
-        System.out.println("Enter genre:");
-        String genre = scanner.nextLine();
+    public void printAllByGenre(String genre) {
         getAllByGenre(genre).forEach(System.out::println);
-    }
-
-    public int getCountByGenreYearAndYear(Scanner scanner)throws ParseException {
-        System.out.println("Enter genre you're looking for:");
-        String genre = scanner.nextLine();
-        System.out.println("Enter year you're looking for:");
-        int year = Integer.parseInt(scanner.nextLine());
-
-        List<Book> filteredBooks = getAllByGenre(genre).stream()
-                .filter(book -> book.getPublishDate().toInstant()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                                .getYear() == year)
-                .toList();
-        return filteredBooks.size();
     }
 
     public void addBook(Book book){
@@ -54,46 +46,26 @@ public class BookService {
         return bookRepository.getBookByTitle(title);
     }
 
-    public Book findBookByName(Scanner scanner){
+    public Book findBookByTitle(String title){
         while (true) {
-        System.out.println("Enter Book name: ");
-        String bookName = scanner.nextLine();
-        if (!bookRepository.existsBookByTitle(bookName)){
-            System.out.println("Book not found");
-            continue;
-        }
-        Book book = getBookByTitle(bookName);
-        if (book == null){
-            System.out.println("null: Book not found");
-            continue;
-        }
-        return book;
+            if (!bookRepository.existsBookByTitle(title)){
+                System.out.println("Book not found");
+                continue;
+            }
+            Book book = getBookByTitle(title);
+            if (book == null){
+                System.out.println("null: Book not found");
+                continue;
+            }
+            return book;
         }
     }
 
-    public void changeBookLocation(Book book, Scanner scanner){
-        System.out.println("Enter Book location: ");
-        String bookLocation = scanner.nextLine();
-        book.setLocation(bookLocation);
+    public void changeBookLocation(Book book, String location){
+        book.setLocation(location);
         bookRepository.save(book);
     }
 
-    public Book createBook(Scanner scanner) throws ParseException {
-        Book book = new Book();
-        System.out.println("Enter title:");
-        book.setTitle(scanner.nextLine());
-        System.out.println("Enter Author:");
-        book.setAuthor(scanner.nextLine());
-        System.out.println("Enter genre:");
-        book.setGenre(scanner.nextLine());
-        System.out.println("Enter date of publishing (yyyy-MM-dd):");
-        String date = scanner.nextLine();
-        Date publishDate = dateFormat.parse(date);
-        book.setPublishDate(publishDate);
-        System.out.println("Enter location (Shelf ID):");
-        book.setLocation(scanner.nextLine());
-        return book;
-    }
 
     public void populateBooks() throws ParseException {
         String[][] bookData = {
@@ -119,8 +91,8 @@ public class BookService {
             book.setTitle(data[0]);
             book.setAuthor(data[1]);
             book.setGenre(data[2]);
-            Date publishDate = dateFormat.parse(data[3]);
-            book.setPublishDate(publishDate);
+            LocalDate date = LocalDate.parse(data[3], DATE_FORMATTER);
+            book.setPublishDate(date);
             book.setLocation(data[4]);
 
             bookRepository.saveAndFlush(book);
