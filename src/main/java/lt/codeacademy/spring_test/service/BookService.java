@@ -8,8 +8,6 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -18,14 +16,12 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter DATE_FORMATTER2 = DateTimeFormatter.ofPattern("yyyy");
 
     public long getCountByGenreAndYear(String genre, String year){
         int yearValue = Integer.parseInt(year);
-        List<Book> filteredByGenre = bookRepository.findAllByGenre(genre);
-        return bookRepository.findAllByGenre(genre).stream()
-                .filter(book -> book.getPublishDate().getYear() == yearValue)
-                .count();
+        LocalDate startDate = LocalDate.of(yearValue, 1, 1);
+        LocalDate endDate = LocalDate.of(yearValue, 12, 31);
+        return bookRepository.countByGenreAndPublishDateBetween(genre, startDate, endDate);
     }
 
     public List<Book> getAllByGenre(String genre) {
@@ -48,10 +44,6 @@ public class BookService {
 
     public Book findBookByTitle(String title){
         while (true) {
-            if (!bookRepository.existsBookByTitle(title)){
-                System.out.println("Book not found");
-                continue;
-            }
             Book book = getBookByTitle(title);
             if (book == null){
                 System.out.println("null: Book not found");

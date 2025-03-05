@@ -15,7 +15,6 @@ public interface BookRepository extends JpaRepository<Book,Long> {
     List<Book> findAllByGenre(String genre);
     Book getBookByTitle(String title);
     boolean existsBookByTitle(String title);
-//    long countBookByPublishDate(LocalDate publishDate);
-//    long countByGenreAndPublishDate(String genre, LocalDate publishDate);
+    long countByGenreAndPublishDateBetween(String genre, LocalDate startDate, LocalDate endDate);
 
 }
