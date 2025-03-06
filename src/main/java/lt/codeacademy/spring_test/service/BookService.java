@@ -17,10 +17,9 @@ public class BookService {
     private final BookRepository bookRepository;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public long getCountByGenreAndYear(String genre, String year){
-        int yearValue = Integer.parseInt(year);
-        LocalDate startDate = LocalDate.of(yearValue, 1, 1);
-        LocalDate endDate = LocalDate.of(yearValue, 12, 31);
+    public long getCountByGenreAndYear(String genre, int year){
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
         return bookRepository.countByGenreAndPublishDateBetween(genre, startDate, endDate);
     }
 

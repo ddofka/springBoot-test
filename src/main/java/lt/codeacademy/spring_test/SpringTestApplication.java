@@ -63,7 +63,7 @@ public class SpringTestApplication {
 					System.out.println("Enter genre you're looking for:");
 					String genre = scanner.nextLine();
 					System.out.println("Enter year you're looking for:");
-					String year = scanner.nextLine();
+					int year = Integer.parseInt(scanner.nextLine());
 					long count = bookService.getCountByGenreAndYear(genre,year);
 					System.out.println(count);
 				}
